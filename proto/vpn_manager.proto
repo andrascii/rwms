@@ -1,0 +1,148 @@
+syntax = "proto3";
+package vpn_manager;
+
+import "google/protobuf/timestamp.proto";
+
+enum UserStatus {
+  ACTIVE = 0;
+  DISABLED = 1;
+  LIMITED = 2;
+  EXPIRED = 3;
+}
+
+enum TrafficLimitStrategy {
+  NO_RESET = 0;
+  DAY = 1;
+  WEEK = 2;
+  MONTH = 3;
+}
+
+message UserLastConnectedNode {
+  google.protobuf.Timestamp connected_at = 1;
+  string node_name = 2;
+}
+
+message HappCrypto {
+  string crypto_link = 1;
+}
+
+message UserActiveInbound {
+  string uuid = 1;
+  string tag = 2;
+  string type = 3;
+  optional string network = 4;
+  optional string security = 5;
+}
+
+message DeleteUserResponse {
+  bool is_deleted = 1;
+}
+
+message UserResponse {
+  string uuid = 1;
+  string subscription_uuid = 2;
+  string short_uuid = 3;
+  string username = 4;
+  optional UserStatus status = 5;
+  double used_traffic_bytes = 6;
+  double lifetime_used_traffic_bytes = 7;
+  optional int64 traffic_limit_bytes = 8;
+  optional TrafficLimitStrategy traffic_limit_strategy = 9;
+  optional string sub_last_user_agent = 10;
+  optional google.protobuf.Timestamp sub_last_opened_at = 11;
+  optional google.protobuf.Timestamp expire_at = 12;
+  optional google.protobuf.Timestamp online_at = 13;
+  optional google.protobuf.Timestamp sub_revoked_at = 14;
+  optional google.protobuf.Timestamp last_traffic_reset_at = 15;
+  string trojan_password = 16;
+  string vless_uuid = 17;
+  string ss_password = 18;
+  optional string description = 19;
+  optional int64 telegram_id = 20;
+  optional string email = 21;
+  optional int32 hwid_device_limit = 22;
+
+  repeated UserActiveInbound active_user_inbounds = 23;
+  string subscription_url = 24;
+  optional google.protobuf.Timestamp first_connected = 25;
+  optional int64 last_trigger_threshold = 26;
+  optional UserLastConnectedNode last_connected_node = 27;
+  optional HappCrypto happ = 28;
+  google.protobuf.Timestamp created_at = 29;
+  google.protobuf.Timestamp updated_at = 30;
+}
+
+message AddUserRequest {
+  string username = 1;
+  optional string email = 2;
+  optional int64 telegram_id = 3;
+  google.protobuf.Timestamp expire_at = 4;
+  optional google.protobuf.Timestamp created_at = 5;
+  optional google.protobuf.Timestamp last_traffic_reset_at = 6;
+  optional bool activate_all_inbounds = 7;
+  optional UserStatus status = 8;
+  optional TrafficLimitStrategy traffic_limit_strategy = 9;
+  repeated string active_user_inbounds = 10;
+  optional string description = 11;
+  optional string tag = 12;
+  optional int64 hwid_device_limit = 13;
+}
+
+message ErrorInfo {
+  string error_code = 1;
+  int64 status_code = 2;
+  string description = 3;
+}
+
+message AddUserReply {
+  bool success = 1;
+  optional ErrorInfo error_info = 2;
+  optional UserResponse response = 3;
+}
+
+message UpdateUserRequest {
+  string uuid = 1;
+  optional UserStatus status = 2;
+  optional int64 traffic_limit_bytes = 3;
+  optional TrafficLimitStrategy traffic_limit_strategy = 4;
+  repeated string active_user_inbounds = 5;
+  optional google.protobuf.Timestamp expire_at = 6;
+  optional google.protobuf.Timestamp last_traffic_reset_at = 7;
+  optional string description = 8;
+  optional string tag = 9;
+  optional int64 telegram_id = 10;
+  optional string email = 11;
+  optional int64 hwid_device_limit = 12;
+}
+
+message UpdateUserReply {
+  bool success = 1;
+  optional ErrorInfo error_info = 2;
+  optional UserResponse response = 3;
+}
+
+message GetAllUsersRequest {
+  int64 offset = 1; // default 0
+  int64 count = 2; // default 25
+}
+
+message GetAllUsersReply {
+  repeated UserResponse users = 1;
+}
+
+message DeleteUserRequest {
+  string uuid = 1;
+}
+
+message DeleteUserReply {
+  bool success = 1;
+  optional ErrorInfo error_info = 2;
+  optional DeleteUserResponse response = 3;
+}
+
+service VpnManager {
+  rpc AddUser(AddUserRequest) returns (AddUserReply) {}
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserReply) {}
+  rpc GetAllUsers(GetAllUsersRequest) returns (GetAllUsersReply) {}
+  rpc DeleteUser(DeleteUserRequest) return (DeleteUserReply) {}
+}
