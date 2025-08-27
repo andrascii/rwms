@@ -1,5 +1,5 @@
 syntax = "proto3";
-package vpn_manager;
+package rwmanager;
 
 import "google/protobuf/timestamp.proto";
 
@@ -34,8 +34,10 @@ message UserActiveInbound {
   optional string security = 5;
 }
 
-message DeleteUserResponse {
-  bool is_deleted = 1;
+message ErrorInfo {
+  string error_code = 1;
+  int64 status_code = 2;
+  string description = 3;
 }
 
 message UserResponse {
@@ -72,6 +74,14 @@ message UserResponse {
   google.protobuf.Timestamp updated_at = 30;
 }
 
+message GetUserByUuidRequest {
+  string uuid = 1;
+}
+
+message GetUserByUsernameRequest {
+  string username = 1;
+}
+
 message AddUserRequest {
   string username = 1;
   optional string email = 2;
@@ -86,18 +96,6 @@ message AddUserRequest {
   optional string description = 11;
   optional string tag = 12;
   optional int64 hwid_device_limit = 13;
-}
-
-message ErrorInfo {
-  string error_code = 1;
-  int64 status_code = 2;
-  string description = 3;
-}
-
-message AddUserReply {
-  bool success = 1;
-  optional ErrorInfo error_info = 2;
-  optional UserResponse response = 3;
 }
 
 message UpdateUserRequest {
@@ -115,12 +113,6 @@ message UpdateUserRequest {
   optional int64 hwid_device_limit = 12;
 }
 
-message UpdateUserReply {
-  bool success = 1;
-  optional ErrorInfo error_info = 2;
-  optional UserResponse response = 3;
-}
-
 message GetAllUsersRequest {
   int64 offset = 1; // default 0
   int64 count = 2; // default 25
@@ -128,21 +120,39 @@ message GetAllUsersRequest {
 
 message GetAllUsersReply {
   repeated UserResponse users = 1;
+  double total = 2;
 }
 
 message DeleteUserRequest {
   string uuid = 1;
 }
 
-message DeleteUserReply {
-  bool success = 1;
-  optional ErrorInfo error_info = 2;
-  optional DeleteUserResponse response = 3;
+message DeleteUserResponse {
+  bool is_deleted = 1;
 }
 
-service VpnManager {
-  rpc AddUser(AddUserRequest) returns (AddUserReply) {}
-  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserReply) {}
+message Inbound {
+  string uuid = 1;
+  string tag = 2;
+  string type = 3;
+  double port = 4;
+  optional string network = 5;
+  optional string security = 6;
+}
+
+message GetInboundsResponse {
+  repeated Inbound inbounds = 1;
+}
+
+message Empty {}
+
+service RwManager {
+  rpc GetUserByUuid(GetUserByUuidRequest) returns (UserResponse) {}
+  rpc GetUserByUsername(GetUserByUsernameRequest) returns (UserResponse) {}
+  rpc AddUser(AddUserRequest) returns (UserResponse) {}
+  rpc UpdateUser(UpdateUserRequest) returns (UserResponse) {}
   rpc GetAllUsers(GetAllUsersRequest) returns (GetAllUsersReply) {}
-  rpc DeleteUser(DeleteUserRequest) return (DeleteUserReply) {}
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {}
+
+  rpc GetInbounds(Empty) returns (GetInboundsResponse) {}
 }

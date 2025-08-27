@@ -1,44 +1,58 @@
-import json
+import grpc
 import asyncio
 import logging
-import grpc
-import vpn_manager_pb2_grpc
+import rwmanager_pb2_grpc
 
-from vpn_manager import VpnManager
+from config import Config
+from server import Server
+from common.setup_logger import setup_logger
 
 logger = logging.getLogger(__name__)
 
-def parse_json(json_string, default=None):
-  """
-  Парсит JSON строку с обработкой ошибок.
-  Возвращает default при ошибке (по умолчанию None).
-  """
-  try:
-    return json.loads(json_string)
-  except json.JSONDecodeError:
-    return default
-  except Exception:
-    return default
-  
 
-async def main():
-  listen_addr = '[::]:50051'
+async def main(config: Config):
+    try:
+        listen_addr = f"[::]:{config.grpc_port}"
 
-  server = grpc.aio.server()
-  server.add_insecure_port(listen_addr)
-  vpn_manager_pb2_grpc.add_VpnManagerServicer_to_server(VpnManager(), server)
+        options = [("grpc.max_message_length", 300 * 1024 * 1024)]
+        server = grpc.aio.server(options=options)
+        server.add_insecure_port(listen_addr)
+        rwmanager_pb2_grpc.add_RwManagerServicer_to_server(
+            Server(config=config), server
+        )
 
-  logging.info(f'Server will listen on {listen_addr}')
+        logging.info(f"server will listen on {listen_addr}")
 
-  await server.start()
-  await server.wait_for_termination()
+        await server.start()
+        await server.wait_for_termination()
+    except (asyncio.CancelledError, KeyboardInterrupt):
+        logging.info("received shutdown signal")
+        await server.stop(0)
+
+    except Exception as e:
+        logging.info(f"error occurred during processing: {e}")
+        await server.stop(0)
 
 
 if __name__ == "__main__":
-  logging.basicConfig(
-    format='[%(asctime)s][%(name)s][%(levelname)s]: %(message)s',
-    level=logging.INFO
-  )
-  
-  logging.basicConfig(level=logging.INFO)
-  asyncio.run(main())
+    config = Config()
+
+    log_level = logging.INFO
+
+    if config.log_level.lower() == "debug":
+        log_level = logging.DEBUG
+    if config.log_level.lower() == "info":
+        log_level = logging.INFO
+    if config.log_level.lower() == "warning":
+        log_level = logging.WARN
+    if config.log_level.lower() == "error":
+        log_level = logging.ERROR
+    if config.log_level.lower() == "critical":
+        log_level = logging.CRITICAL
+
+    setup_logger(filename="rwms.log", level=log_level)
+
+    try:
+        asyncio.run(main(config=config))
+    except KeyboardInterrupt:
+        logging.info("program interrupted by user")

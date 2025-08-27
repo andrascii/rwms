@@ -19,52 +19,79 @@ import logging
 
 import grpc
 import asyncio
-import vpn_manager_pb2
-import vpn_manager_pb2_grpc
+import rwmanager_pb2
+import rwmanager_pb2_grpc
 
 from datetime import datetime, timedelta, timezone
 from google.protobuf.timestamp_pb2 import Timestamp
 
+
 def to_proto_timestamp(dt: datetime) -> Timestamp:
-  ts = Timestamp()
-  ts.FromDatetime(dt)
-  return ts
+    ts = Timestamp()
+    ts.FromDatetime(dt)
+    return ts
+
 
 async def main():
-  # NOTE(gRPC Python Team): .close() is possible on a channel and should be
-  # used in circumstances in which the with statement does not fit the needs
-  # of the code.
-  logging.info("Will try to add user...")
+    # NOTE(gRPC Python Team): .close() is possible on a channel and should be
+    # used in circumstances in which the with statement does not fit the needs
+    # of the code.
+    logging.info("Will try to add user...")
 
-  channel = grpc.aio.insecure_channel("localhost:50051")
-  stub = vpn_manager_pb2_grpc.VpnManagerStub(channel)
+    channel = grpc.aio.insecure_channel("localhost:50052")
+    stub = rwmanager_pb2_grpc.RwManagerStub(channel)
+    result = await stub.GetAllUsers(rwmanager_pb2.GetAllUsersRequest(offset=0, count=10))
+    logging.info(f"rwms client received: {result}")
 
-  add_user_response = await stub.AddUser(
-    vpn_manager_pb2.AddUserRequest(
-      username="Administrator",
-      email="apugachevdev@yandex.ru",
-      telegram_id=594514115,
-      expire_at=datetime.now(timezone.utc) + timedelta(days=7),
-      activate_all_inbounds=True,
-      status=vpn_manager_pb2.UserStatus.ACTIVE,
-      traffic_limit_strategy=vpn_manager_pb2.TrafficLimitStrategy.NO_RESET
-    )
-  )
+    #add_user_response = await stub.AddUser(
+    #   rwmanager_pb2.AddUserRequest(
+    #       username="Administrator",
+    #       email="apugachevdev@yandex.ru",
+    #       telegram_id=594514115,
+    #       expire_at=datetime.now(timezone.utc) + timedelta(days=7),
+    #       activate_all_inbounds=True,
+    #       status=rwmanager_pb2.UserStatus.ACTIVE,
+    #       traffic_limit_strategy=rwmanager_pb2.TrafficLimitStrategy.NO_RESET,
+    #   )
+    #)
 
-  logging.info(f"VpnManager client received:\n{add_user_response}")
+    #for i in range(100000):
+    #    await stub.AddUser(
+    #        rwmanager_pb2.AddUserRequest(
+    #            username=str(200000 + i + 5675),
+    #            email="apugachevdev@yandex.ru",
+    #            telegram_id=594514115,
+    #            expire_at=datetime.now(timezone.utc) + timedelta(days=7),
+    #            activate_all_inbounds=True,
+    #            status=rwmanager_pb2.UserStatus.ACTIVE,
+    #            traffic_limit_strategy=rwmanager_pb2.TrafficLimitStrategy.NO_RESET,
+    #        )
+    #    )
 
-  #if add_user_response.success == True:
-  #  update_user_response = stub.UpdateUser(
-  #     vpn_manager_pb2.UpdateUserRequest(
-  #        
-  #     )
-  #  )
+    #response = await stub.GetUserByUsername(
+    #    rwmanager_pb2.GetUserByUsernameRequest(username="Administrator")
+    #)
+    #logging.info(f"rwms client received:\n{response}")
+#
+    #if response:
+    #    update_user_response = await stub.UpdateUser(
+    #        rwmanager_pb2.UpdateUserRequest(
+    #            uuid=response.uuid,
+    #            email="new_email@example.com",
+    #            telegram_id=123456789,
+    #            expire_at=datetime.now(timezone.utc) + timedelta(days=30),
+    #            status=rwmanager_pb2.UserStatus.ACTIVE,
+    #            traffic_limit_strategy=rwmanager_pb2.TrafficLimitStrategy.NO_RESET,
+    #        )
+    #    )
+#
+    #    logging.info(f"rwms client received:\n{update_user_response}")
+
 
 if __name__ == "__main__":
     logging.basicConfig(
-      format='[%(asctime)s][%(name)s][%(levelname)s]: %(message)s',
-      level=logging.INFO
+        format="[%(asctime)s][%(name)s][%(levelname)s]: %(message)s", level=logging.INFO
     )
-    
+
     logging.basicConfig()
     asyncio.run(main())
