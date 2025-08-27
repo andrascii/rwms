@@ -232,8 +232,8 @@ class Server(rwmanager_pb2_grpc.RwManager):
             created_user = await self.__remnawave.users.create_user(
                 CreateUserRequestDto(
                     username=request.username,
-                    email=request.email,
-                    telegram_id=request.telegram_id,
+                    email=request.email if request.HasField("email") else None,
+                    telegram_id=request.telegram_id if request.HasField("telegram_id") else None,
                     expire_at=from_proto_timestamp(request.expire_at),
                     created_at=(
                         from_proto_timestamp(request.created_at)
@@ -244,9 +244,9 @@ class Server(rwmanager_pb2_grpc.RwManager):
                     status=status,
                     traffic_limit_strategy=traffic_limit_strategy,
                     active_user_inbounds=active_user_inbounds,
-                    description=request.description,
-                    tag=request.tag if request.tag else None,
-                    hwidDeviceLimit=request.hwid_device_limit,
+                    description=request.description if request.HasField("description") else None,
+                    tag=request.tag if request.HasField("tag") else None,
+                    hwidDeviceLimit=request.hwid_device_limit if request.HasField("hwid_device_limit") else None,
                     last_traffic_reset_at=(
                         from_proto_timestamp(request.last_traffic_reset_at)
                         if request.last_traffic_reset_at
