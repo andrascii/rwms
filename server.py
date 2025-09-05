@@ -230,7 +230,6 @@ class Server(rwmanager_pb2_grpc.RwManager):
                         if request.created_at
                         else None
                     ),
-                    activate_all_inbounds=request.activate_all_inbounds,
                     status=status,
                     traffic_limit_strategy=traffic_limit_strategy,
                     active_user_inbounds=active_user_inbounds,
@@ -309,7 +308,6 @@ class Server(rwmanager_pb2_grpc.RwManager):
                         else None
                     ),
                     traffic_limit_strategy=traffic_limit_strategy,
-                    active_user_inbounds=active_user_inbounds,
                     expire_at=(
                         from_proto_timestamp(request.expire_at)
                         if request.HasField("expire_at")

@@ -91,10 +91,9 @@ message AddUserRequest {
   optional bool activate_all_inbounds = 7;
   optional UserStatus status = 8;
   optional TrafficLimitStrategy traffic_limit_strategy = 9;
-  repeated string active_user_inbounds = 10;
-  optional string description = 11;
-  optional string tag = 12;
-  optional int64 hwid_device_limit = 13;
+  optional string description = 10;
+  optional string tag = 11;
+  optional int64 hwid_device_limit = 12;
 }
 
 message UpdateUserRequest {
@@ -102,14 +101,13 @@ message UpdateUserRequest {
   optional UserStatus status = 2;
   optional int64 traffic_limit_bytes = 3;
   optional TrafficLimitStrategy traffic_limit_strategy = 4;
-  repeated string active_user_inbounds = 5;
-  optional google.protobuf.Timestamp expire_at = 6;
-  optional google.protobuf.Timestamp last_traffic_reset_at = 7;
-  optional string description = 8;
-  optional string tag = 9;
-  optional int64 telegram_id = 10;
-  optional string email = 11;
-  optional int64 hwid_device_limit = 12;
+  optional google.protobuf.Timestamp expire_at = 5;
+  optional google.protobuf.Timestamp last_traffic_reset_at = 6;
+  optional string description = 7;
+  optional string tag = 8;
+  optional int64 telegram_id = 9;
+  optional string email = 10;
+  optional int64 hwid_device_limit = 11;
 }
 
 message GetAllUsersRequest {
