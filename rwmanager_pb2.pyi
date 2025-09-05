@@ -71,7 +71,7 @@ class ErrorInfo(_message.Message):
     def __init__(self, error_code: _Optional[str] = ..., status_code: _Optional[int] = ..., description: _Optional[str] = ...) -> None: ...
 
 class UserResponse(_message.Message):
-    __slots__ = ("uuid", "subscription_uuid", "short_uuid", "username", "status", "used_traffic_bytes", "lifetime_used_traffic_bytes", "traffic_limit_bytes", "traffic_limit_strategy", "sub_last_user_agent", "sub_last_opened_at", "expire_at", "online_at", "sub_revoked_at", "last_traffic_reset_at", "trojan_password", "vless_uuid", "ss_password", "description", "telegram_id", "email", "hwid_device_limit", "active_user_inbounds", "subscription_url", "first_connected", "last_trigger_threshold", "last_connected_node", "happ", "created_at", "updated_at")
+    __slots__ = ("uuid", "subscription_uuid", "short_uuid", "username", "status", "used_traffic_bytes", "lifetime_used_traffic_bytes", "traffic_limit_bytes", "traffic_limit_strategy", "sub_last_user_agent", "sub_last_opened_at", "expire_at", "online_at", "sub_revoked_at", "last_traffic_reset_at", "trojan_password", "vless_uuid", "ss_password", "description", "telegram_id", "email", "hwid_device_limit", "subscription_url", "first_connected", "last_trigger_threshold", "last_connected_node", "happ", "created_at", "updated_at")
     UUID_FIELD_NUMBER: _ClassVar[int]
     SUBSCRIPTION_UUID_FIELD_NUMBER: _ClassVar[int]
     SHORT_UUID_FIELD_NUMBER: _ClassVar[int]
@@ -94,7 +94,6 @@ class UserResponse(_message.Message):
     TELEGRAM_ID_FIELD_NUMBER: _ClassVar[int]
     EMAIL_FIELD_NUMBER: _ClassVar[int]
     HWID_DEVICE_LIMIT_FIELD_NUMBER: _ClassVar[int]
-    ACTIVE_USER_INBOUNDS_FIELD_NUMBER: _ClassVar[int]
     SUBSCRIPTION_URL_FIELD_NUMBER: _ClassVar[int]
     FIRST_CONNECTED_FIELD_NUMBER: _ClassVar[int]
     LAST_TRIGGER_THRESHOLD_FIELD_NUMBER: _ClassVar[int]
@@ -124,7 +123,6 @@ class UserResponse(_message.Message):
     telegram_id: int
     email: str
     hwid_device_limit: int
-    active_user_inbounds: _containers.RepeatedCompositeFieldContainer[UserActiveInbound]
     subscription_url: str
     first_connected: _timestamp_pb2.Timestamp
     last_trigger_threshold: int
@@ -132,7 +130,7 @@ class UserResponse(_message.Message):
     happ: HappCrypto
     created_at: _timestamp_pb2.Timestamp
     updated_at: _timestamp_pb2.Timestamp
-    def __init__(self, uuid: _Optional[str] = ..., subscription_uuid: _Optional[str] = ..., short_uuid: _Optional[str] = ..., username: _Optional[str] = ..., status: _Optional[_Union[UserStatus, str]] = ..., used_traffic_bytes: _Optional[float] = ..., lifetime_used_traffic_bytes: _Optional[float] = ..., traffic_limit_bytes: _Optional[int] = ..., traffic_limit_strategy: _Optional[_Union[TrafficLimitStrategy, str]] = ..., sub_last_user_agent: _Optional[str] = ..., sub_last_opened_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., expire_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., online_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., sub_revoked_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., last_traffic_reset_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., trojan_password: _Optional[str] = ..., vless_uuid: _Optional[str] = ..., ss_password: _Optional[str] = ..., description: _Optional[str] = ..., telegram_id: _Optional[int] = ..., email: _Optional[str] = ..., hwid_device_limit: _Optional[int] = ..., active_user_inbounds: _Optional[_Iterable[_Union[UserActiveInbound, _Mapping]]] = ..., subscription_url: _Optional[str] = ..., first_connected: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., last_trigger_threshold: _Optional[int] = ..., last_connected_node: _Optional[_Union[UserLastConnectedNode, _Mapping]] = ..., happ: _Optional[_Union[HappCrypto, _Mapping]] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    def __init__(self, uuid: _Optional[str] = ..., subscription_uuid: _Optional[str] = ..., short_uuid: _Optional[str] = ..., username: _Optional[str] = ..., status: _Optional[_Union[UserStatus, str]] = ..., used_traffic_bytes: _Optional[float] = ..., lifetime_used_traffic_bytes: _Optional[float] = ..., traffic_limit_bytes: _Optional[int] = ..., traffic_limit_strategy: _Optional[_Union[TrafficLimitStrategy, str]] = ..., sub_last_user_agent: _Optional[str] = ..., sub_last_opened_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., expire_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., online_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., sub_revoked_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., last_traffic_reset_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., trojan_password: _Optional[str] = ..., vless_uuid: _Optional[str] = ..., ss_password: _Optional[str] = ..., description: _Optional[str] = ..., telegram_id: _Optional[int] = ..., email: _Optional[str] = ..., hwid_device_limit: _Optional[int] = ..., subscription_url: _Optional[str] = ..., first_connected: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., last_trigger_threshold: _Optional[int] = ..., last_connected_node: _Optional[_Union[UserLastConnectedNode, _Mapping]] = ..., happ: _Optional[_Union[HappCrypto, _Mapping]] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class GetUserByUuidRequest(_message.Message):
     __slots__ = ("uuid",)

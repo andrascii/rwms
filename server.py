@@ -9,12 +9,12 @@ from typing import Optional
 from datetime import datetime, timezone
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from remnawave_api import RemnawaveSDK
-from remnawave_api.models import UsersResponseDto, UserResponseDto
+from remnawave import RemnawaveSDK
+from remnawave.models import UsersResponseDto, UserResponseDto
 
-from remnawave_api.enums import ErrorCode, UserStatus, TrafficLimitStrategy
-from remnawave_api.exceptions import ApiError
-from remnawave_api.models import (
+from remnawave.enums import ErrorCode, UserStatus, TrafficLimitStrategy
+from remnawave.exceptions import ApiError
+from remnawave.models import (
     CreateUserRequestDto,
     DeleteUserResponseDto,
     EmailUserResponseDto,
@@ -115,16 +115,6 @@ def dto_to_proto_user(user: UserResponseDto) -> proto.UserResponse:
         hwid_device_limit=(
             user.hwidDeviceLimit if user.hwidDeviceLimit is not None else None
         ),
-        active_user_inbounds=[
-            proto.UserActiveInbound(
-                uuid=str(inb.uuid),
-                tag=inb.tag,
-                type=inb.type,
-                network=inb.network if inb.network else None,
-                security=inb.security if inb.security else None,
-            )
-            for inb in user.active_user_inbounds
-        ],
         subscription_url=user.subscription_url,
         first_connected=to_ts(user.first_connected),
         last_trigger_threshold=(
