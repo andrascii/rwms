@@ -9,21 +9,15 @@ from typing import Optional
 from datetime import datetime, timezone
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from remnawave_api import RemnawaveSDK
-from remnawave_api.models import UsersResponseDto, UserResponseDto
+from remnawave import RemnawaveSDK
+from remnawave.models import UserResponseDto
 
-from remnawave_api.enums import ErrorCode, UserStatus, TrafficLimitStrategy
-from remnawave_api.exceptions import ApiError
-from remnawave_api.models import (
+from remnawave.enums import UserStatus, TrafficLimitStrategy
+from remnawave.exceptions import ApiError
+from remnawave.models import (
     CreateUserRequestDto,
-    DeleteUserResponseDto,
-    EmailUserResponseDto,
-    TelegramUserResponseDto,
     UpdateUserRequestDto,
     UserResponseDto,
-    UsersResponseDto,
-    TagsResponseDto,
-    RevokeUserRequestDto,
 )
 
 from config import Config
@@ -84,7 +78,6 @@ def dto_to_proto_user(user: UserResponseDto) -> proto.UserResponse:
 
     return proto.UserResponse(
         uuid=str(user.uuid),
-        subscription_uuid=str(user.subscription_uuid),
         short_uuid=user.short_uuid,
         username=user.username,
         status=RemnawaveUserStatusToProto(user.status) if user.status else None,
@@ -115,16 +108,6 @@ def dto_to_proto_user(user: UserResponseDto) -> proto.UserResponse:
         hwid_device_limit=(
             user.hwidDeviceLimit if user.hwidDeviceLimit is not None else None
         ),
-        active_user_inbounds=[
-            proto.UserActiveInbound(
-                uuid=str(inb.uuid),
-                tag=inb.tag,
-                type=inb.type,
-                network=inb.network if inb.network else None,
-                security=inb.security if inb.security else None,
-            )
-            for inb in user.active_user_inbounds
-        ],
         subscription_url=user.subscription_url,
         first_connected=to_ts(user.first_connected),
         last_trigger_threshold=(
@@ -184,6 +167,11 @@ class Server(rwmanager_pb2_grpc.RwManager):
         except ApiError as e:
             self.__logger.error(f"failed to get user by username: {e}")
             context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"failed to get user by username: {e}")
+            return proto.UserResponse()
+        except Exception as e:
+            self.__logger.error(f"failed to get user by username: {e}")
+            context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"failed to get user by username: {e}")
             return proto.UserResponse()
 

@@ -1,5 +1,9 @@
-remnawave_api
 pytz
 grpcio
 grpcio-tools
 black
+httpx
+rapid-api-client==0.6.0
+orjson
+pydantic
+pydantic-xml
