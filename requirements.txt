@@ -1,4 +1,4 @@
-remnawave_api
+remnawave
 pytz
 grpcio
 grpcio-tools
