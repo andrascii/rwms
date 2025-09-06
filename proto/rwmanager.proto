@@ -88,7 +88,7 @@ message AddUserRequest {
   google.protobuf.Timestamp expire_at = 4;
   optional google.protobuf.Timestamp created_at = 5;
   optional google.protobuf.Timestamp last_traffic_reset_at = 6;
-  optional bool activate_all_inbounds = 7;
+  repeated string active_internal_squads = 7;
   optional UserStatus status = 8;
   optional TrafficLimitStrategy traffic_limit_strategy = 9;
   optional string description = 10;

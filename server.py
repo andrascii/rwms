@@ -241,6 +241,7 @@ class Server(rwmanager_pb2_grpc.RwManager):
                         if request.last_traffic_reset_at
                         else None
                     ),
+                    active_internal_squads=list(request.active_internal_squads)
                 )
             )
 
