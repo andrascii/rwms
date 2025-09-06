@@ -215,8 +215,6 @@ class Server(rwmanager_pb2_grpc.RwManager):
                 )
                 return proto.UserResponse()
 
-            active_user_inbounds = list(request.active_user_inbounds)
-
             self.__logger.info(f"received request {request}")
 
             created_user = await self.__remnawave.users.create_user(
@@ -232,7 +230,6 @@ class Server(rwmanager_pb2_grpc.RwManager):
                     ),
                     status=status,
                     traffic_limit_strategy=traffic_limit_strategy,
-                    active_user_inbounds=active_user_inbounds,
                     description=request.description if request.HasField("description") else None,
                     tag=request.tag if request.HasField("tag") else None,
                     hwidDeviceLimit=request.hwid_device_limit if request.HasField("hwid_device_limit") else None,
@@ -293,12 +290,6 @@ class Server(rwmanager_pb2_grpc.RwManager):
                 )
                 return proto.UserResponse()
 
-            active_user_inbounds = (
-                list(request.active_user_inbounds)
-                if len(request.active_user_inbounds)
-                else None
-            )
-
             updated_user = await self.__remnawave.users.update_user(
                 UpdateUserRequestDto(
                     uuid=request.uuid,
@@ -332,6 +323,7 @@ class Server(rwmanager_pb2_grpc.RwManager):
                         if request.HasField("hwid_device_limit")
                         else None
                     ),
+                    active_internal_squads=list(request.active_internal_squads)
                 )
             )
 
