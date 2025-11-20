@@ -84,7 +84,6 @@ def dto_to_proto_user(user: UserResponseDto) -> proto.UserResponse:
 
     return proto.UserResponse(
         uuid=str(user.uuid),
-        subscription_uuid=str(user.subscription_uuid),
         short_uuid=user.short_uuid,
         username=user.username,
         status=RemnawaveUserStatusToProto(user.status) if user.status else None,
@@ -113,7 +112,7 @@ def dto_to_proto_user(user: UserResponseDto) -> proto.UserResponse:
         telegram_id=user.telegram_id if user.telegram_id else None,
         email=user.email if user.email else None,
         hwid_device_limit=(
-            user.hwidDeviceLimit if user.hwidDeviceLimit is not None else None
+            user.hwid_device_limit if user.hwid_device_limit is not None else None
         ),
         subscription_url=user.subscription_url,
         first_connected=to_ts(user.first_connected),
