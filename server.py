@@ -10,20 +10,14 @@ from datetime import datetime, timezone
 from google.protobuf.timestamp_pb2 import Timestamp
 
 from remnawave import RemnawaveSDK
-from remnawave.models import UsersResponseDto, UserResponseDto
+from remnawave.models import UserResponseDto
 
-from remnawave.enums import ErrorCode, UserStatus, TrafficLimitStrategy
+from remnawave.enums import UserStatus, TrafficLimitStrategy
 from remnawave.exceptions import ApiError
 from remnawave.models import (
     CreateUserRequestDto,
-    DeleteUserResponseDto,
-    EmailUserResponseDto,
-    TelegramUserResponseDto,
     UpdateUserRequestDto,
     UserResponseDto,
-    UsersResponseDto,
-    TagsResponseDto,
-    RevokeUserRequestDto,
 )
 
 from config import Config
