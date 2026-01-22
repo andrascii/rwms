@@ -22,6 +22,11 @@ message UserLastConnectedNode {
   string node_name = 2;
 }
 
+message ActiveInternalSquad {
+  string uuid = 1;
+  string name = 2;
+}
+
 message HappCrypto {
   string crypto_link = 1;
 }
@@ -67,8 +72,8 @@ message UserResponse {
   string subscription_url = 23;
   optional google.protobuf.Timestamp first_connected = 24;
   optional int64 last_trigger_threshold = 25;
-  optional UserLastConnectedNode last_connected_node = 26;
-  optional HappCrypto happ = 27;
+  optional HappCrypto happ = 26;
+  repeated ActiveInternalSquad active_internal_squads = 27;
   google.protobuf.Timestamp created_at = 28;
   google.protobuf.Timestamp updated_at = 29;
 }

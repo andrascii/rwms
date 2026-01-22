@@ -1,5 +1,6 @@
 import os
 import grpc
+import orjson
 import logging
 
 import rwmanager_pb2 as proto
@@ -18,6 +19,8 @@ from remnawave.models import (
     CreateUserRequestDto,
     UpdateUserRequestDto,
     UserResponseDto,
+    ActiveInternalSquadDto,
+    HappCrypto
 )
 
 from config import Config
@@ -70,26 +73,30 @@ def RemnawaveTrafficLimitStrategyToProto(
     else:
         raise ValueError(f"Invalid traffic limit strategy: {strategy}")
 
+def dto_to_proto_active_squad(squad: ActiveInternalSquadDto) -> proto.ActiveInternalSquad:
+    return proto.ActiveInternalSquad(
+        uuid=str(squad.uuid),
+        name=squad.name,
+    )
+
+def dto_to_proto_happ(h: HappCrypto) -> proto.HappCrypto:
+    return proto.HappCrypto(
+        crypto_link=h.crypto_link
+    )
 
 def dto_to_proto_user(user: UserResponseDto) -> proto.UserResponse:
     """
     Converts a UserResponseDto to a UserResponse protobuf message.
     """
 
-    return proto.UserResponse(
+    response = proto.UserResponse(
         uuid=str(user.uuid),
         short_uuid=user.short_uuid,
         username=user.username,
-        status=RemnawaveUserStatusToProto(user.status) if user.status else None,
         used_traffic_bytes=user.used_traffic_bytes,
         lifetime_used_traffic_bytes=user.lifetime_used_traffic_bytes,
         traffic_limit_bytes=(
             user.traffic_limit_bytes if user.traffic_limit_bytes is not None else None
-        ),
-        traffic_limit_strategy=(
-            RemnawaveTrafficLimitStrategyToProto(user.traffic_limit_strategy)
-            if user.traffic_limit_strategy
-            else None
         ),
         sub_last_user_agent=(
             user.sub_last_user_agent if user.sub_last_user_agent else None
@@ -113,24 +120,24 @@ def dto_to_proto_user(user: UserResponseDto) -> proto.UserResponse:
         last_trigger_threshold=(
             user.last_trigger_threshold if user.last_trigger_threshold else None
         ),
-        last_connected_node=(
-            proto.UserLastConnectedNode(
-                connected_at=to_ts(user.last_connected_node.connected_at),
-                node_name=user.last_connected_node.node_name,
-            )
-            if user.last_connected_node
-            else None
-        ),
-        happ=(
-            proto.HappCrypto(
-                crypto_link=user.happ.cryptoLink,
-            )
-            if user.happ
-            else None
-        ),
+        active_internal_squads=[
+            dto_to_proto_active_squad(s)
+            for s in user.active_internal_squads
+        ],
+        happ=dto_to_proto_happ(user.happ),
         created_at=to_ts(user.created_at),
         updated_at=to_ts(user.updated_at),
     )
+
+    if user.status is not None:
+        response.status = RemnawaveUserStatusToProto(user.status)
+
+    if user.traffic_limit_strategy is not None:
+        response.traffic_limit_strategy = RemnawaveTrafficLimitStrategyToProto(
+            user.traffic_limit_strategy
+        )
+
+    return response
 
 
 class Server(rwmanager_pb2_grpc.RwManager):
@@ -235,7 +242,7 @@ class Server(rwmanager_pb2_grpc.RwManager):
                 )
             )
 
-            self.__logger.info(f"user created: {created_user}")
+            self.__logger.info(f"user created: {created_user.model_dump_json(by_alias=True)}")
             return dto_to_proto_user(created_user)
         except ApiError as e:
             self.__logger.error(f"add user operation failed: {e}")
@@ -320,7 +327,7 @@ class Server(rwmanager_pb2_grpc.RwManager):
                 )
             )
 
-            self.__logger.info(f"user updated: {updated_user}")
+            self.__logger.info(f"user updated: {updated_user.model_dump_json(by_alias=True)}")
             return dto_to_proto_user(updated_user)
         except ApiError as e:
             self.__logger.error(f"update user operation failed: {e}")
@@ -330,7 +337,7 @@ class Server(rwmanager_pb2_grpc.RwManager):
         
     async def GetAllUsers(self, request: proto.GetAllUsersRequest, context: grpc.aio.ServicerContext) -> proto.GetAllUsersReply:
         try:
-            all_users = await self.__remnawave.users.get_all_users_v2(request.offset, request.count)
+            all_users = await self.__remnawave.users.get_all_users(request.offset, request.count)
             response = proto.GetAllUsersReply(total=all_users.total)
         
             proto_user_list: list[proto.UserResponse] = [
